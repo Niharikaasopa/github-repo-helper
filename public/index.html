@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>GitHub Repo Helper</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f9;
+        padding: 2rem;
+        color: #333;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        background: #fff;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        text-align: center;
+      }
+      input {
+        width: 94.6%;
+        padding: 1rem 20px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+      }
+      button {
+        width: 100%;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        font-size: 1rem;
+        border-radius: 8px;
+      }
+      input {
+        border: 1px solid #ccc;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+      }
+      .repo-info {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .description {
+        font-size: 1.1rem;
+        color: #666;
+        margin: 1rem 0;
+      }
+      .summary {
+        background: #f0f7ff;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+        border-left: 4px solid #007bff;
+      }
+      .summary h3 {
+        margin-top: 0;
+        color: #0056b3;
+      }
+      .summary p {
+        margin: 0.5rem 0 0;
+        line-height: 1.6;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+      .stat {
+        background: #f8f9fa;
+        padding: 0.8rem;
+        border-radius: 8px;
+        text-align: center;
+      }
+      .details {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+      .languages {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+      .language {
+        background: #f0f0f0;
+        padding: 0.5rem;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .contributors {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin: 1rem 0;
+      }
+      .contributor {
+        background: #f0f0f0;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        text-decoration: none;
+        color: #333;
+      }
+      .view-on-github {
+        margin-top: 2rem;
+        text-align: center;
+      }
+      .view-on-github a {
+        display: inline-block;
+        background: #24292e;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+      }
+      .view-on-github a:hover {
+        background: #000;
+      }
+      .error {
+        background: #fee;
+        color: #c00;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #fcc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔍 GitHub Repo Helper</h1>
+      <p>
+        Enter a GitHub repository URL to see its summary, languages, and README
+        snippet.
+      </p>
+      <input
+        type="text"
+        id="repoUrl"
+        placeholder="https://github.com/vercel/next.js"
+      />
+      <button onclick="getInfo()">Get Info</button>
+      <div class="result" id="result"></div>
+    </div>
+    <script>
+      async function getInfo() {
+        const repoUrl = document.getElementById("repoUrl").value;
+        const resultDiv = document.getElementById("result");
+
+        if (!repoUrl) {
+          resultDiv.innerHTML = "Please enter a GitHub repository URL";
+          return;
+        }
+
+        try {
+          resultDiv.innerHTML = "Loading...";
+          const response = await fetch(
+            `/repo-info?url=${encodeURIComponent(repoUrl)}`
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          resultDiv.innerHTML = `
+          <div class="repo-info">
+            <h2>📊 ${data.name}</h2>
+            <p class="description">${data.description || "No description available"}</p>
+            
+            <div class="summary">
+              <h3>📖 Repository Summary</h3>
+              <p>${data.summary}</p>
+            </div>
+            
+            <div class="stats">
+              <div class="stat">⭐ ${data.stars.toLocaleString()} stars</div>
+              <div class="stat">🔱 ${data.forks.toLocaleString()} forks</div>
+              <div class="stat">⚠️ ${data.openIssues.toLocaleString()} open issues</div>
+            </div>
+
+            <div class="details">
+              <p><strong>Last Updated:</strong> ${data.lastUpdated}</p>
+            </div>
+
+            <div class="view-on-github">
+              <a href="${data.repoUrl}" target="_blank">View on GitHub</a>
+            </div>
+          </div>
+        `;
+        } catch (error) {
+          console.error("Error:", error);
+          resultDiv.innerHTML = `<div class="error">Failed to fetch repository information: ${error.message}</div>`;
+        }
+      }
+    </script>
+  </body>
+</html>
