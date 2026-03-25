@@ -19,11 +19,15 @@ Ever needed to pull GitHub repository information programmatically? GitHub Repo 
 ```bash
 git clone https://github.com/Niharikaasopa/github-repo-helper.git
 cd github-repo-helper
+```
 
 ### Step 2: Install Dependencies
+```bash
 npm install
+```
 
 ### Step 3: Start Using It
+```bash
 const repoHelper = require('./index.js');
 // You're ready to go! 🎉
-
+```
